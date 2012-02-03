@@ -1,55 +1,40 @@
-class IsbnValidator
-
-#attribute accessor
- #attr_accessor:isbn
-#getter
- attr_reader:isbn
-#setter
- attr_writer:isbn
-#constructor  
-  def initialize(isbn)
-    #puts "Initializing"
-    #if isbn.nil?
-    @isbn=isbn
-    #else
-    #@isbn=cleanup_isbn(isbn)
- end
-    #@isbn=cleanup_isbn(isbn)
-    #@isbn=valid?(isbn)	
+class IsbnValidator < ActiveModel::Validator
+  VALID_CHARACTERS = ['0', '1', '2', '3', '4', '5',
+                      '6', '7', '8', '9', '0', 'x']
+  
+  attr_reader :isbn
+  
+  def validate(record)
+    if record.is_a?(String)
+      return valid?(record)
+    else
+      record.errors[:isbn] << "is not a valid ISBN" unless valid?(record.isbn)
+    end
+    
   end
   
- def valid?
- 
-  if @isbn.size=10 || @isbn.size=13
-   #return true
-   @isbn.chars do |c|
-   return false unless valid_character?(c)
- #else
-  #return false
- end
- end
- private
-  def self.valid_character?(c)
-  #return c==1 || c==2
-  VALID_CHARACTERS.include(c)
- end
- private
- def cleanup_isbn
-  @isbn.downcase.gsub("-","").gsub(" ","")
-   #@isbn=isbn.gsub("-","")
-  #@isbn=isbn.gsub(" ","")
- end 
-
-
- 
-#getters
-  #def isbn
-    #return @isbn
-   # @isbn
-  #end
-
-#setters
-  #def isbn=(isbn)
-  #@isbn=isbn
-  #end
+  # This is a comment
+  def initialize(options = {})
+    super(options)
+  end
+  
+  def valid?(isbn)
+    isbn = cleanup_isbn(isbn)
+    if isbn.size == 10 || isbn.size == 13
+      isbn.chars.all? { |c| valid_character?(c) }
+    else
+      return false
+    end
+  end
+  
+  private
+  
+  def valid_character?(c)
+    return VALID_CHARACTERS.include?(c)
+  end
+  
+  def cleanup_isbn(isbn)
+    isbn.downcase.gsub("-", "").gsub(" ", "")
+  end  
+  
 end
