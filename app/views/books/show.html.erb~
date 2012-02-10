@@ -1,0 +1,9 @@
+<h1><%= @book.title %></h1>
+
+<p>
+ by <%= @book.authors %>
+</p>
+
+<p>
+ISBN <%= @book.isbn %>
+</p>
